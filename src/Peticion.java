@@ -11,8 +11,8 @@
  * @author (at)fferegrino
  */
 public class Peticion extends Thread {
-
-    public static final String SERVER_ROUTE = "C:\\server";
+    public static File  directory = new File("./Server");
+    public static final String SERVER_ROUTE = directory.getAbsolutePath();
     public static final String INDEX = "/index.html";
     public static final int BUFFER_SIZE = 1024;
     private byte[] buffer = new byte[BUFFER_SIZE];
