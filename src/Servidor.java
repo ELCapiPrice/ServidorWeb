@@ -15,7 +15,7 @@ import java.util.logging.Logger;
  */
 public class Servidor {
 
-    public static final int LISTENING_PORT = 12345;
+    public static final int LISTENING_PORT = 7777;
     private static ServerSocket ss;
 
     public static void main(String [] args) {

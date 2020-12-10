@@ -1,14 +1,6 @@
-        import java.io.BufferedOutputStream;
-        import java.io.BufferedReader;
-        import java.io.DataInputStream;
-        import java.io.File;
-        import java.io.FileInputStream;
-        import java.io.FileNotFoundException;
-        import java.io.FileReader;
-        import java.io.IOException;
-        import java.io.InputStreamReader;
-        import java.io.OutputStreamWriter;
-        import java.io.PrintWriter;
+        import org.w3c.dom.ls.LSOutput;
+
+        import java.io.*;
         import java.net.Socket;
         import java.util.Date;
         import java.util.HashMap;
@@ -19,8 +11,8 @@
  * @author (at)fferegrino
  */
 public class Peticion extends Thread {
-
-    public static final String SERVER_ROUTE = "C:\\server";
+    public static File  directory = new File("./Server");
+    public static final String SERVER_ROUTE = directory.getAbsolutePath();
     public static final String INDEX = "/index.html";
     public static final int BUFFER_SIZE = 1024;
     private byte[] buffer = new byte[BUFFER_SIZE];
@@ -28,10 +20,12 @@ public class Peticion extends Thread {
     private PrintWriter pw;
     protected BufferedOutputStream bos;
     protected BufferedReader br;
-
+    public HashMap<String, String> listaMime;
+    private String  extension;
     public Peticion(Socket socket) {
         this.socket = socket;
     }
+    private String contentType;
 
     @Override
     public void run() {
@@ -44,10 +38,18 @@ public class Peticion extends Thread {
             // Archivo solicitado
             String file = header.getFile();
             file = file.equals("/") ? INDEX : file;
+            extension = "";
+            int i = file.lastIndexOf('.');
+            if (i >= 0) {
+                extension = file.substring(i+1);
+            }
+
+            System.out.println("Extension: "+extension);
 
             //TODO obtener extension del archivo de "file"
 
             System.out.println("Petición: " + header.getMethod() + " " + file);
+           // System.out.println("Header: "+header.toString());
             HashMap<String, String> parametros = header.getParametros();
             if (parametros.keySet().size() > 0) {
                 System.out.println("Parámetros:");
@@ -73,19 +75,45 @@ public class Peticion extends Thread {
     }
 
     private void sendFile(String file) throws FileNotFoundException, IOException {
+
+        String mime= iniciaMiemes(extension);
+
         File seleccionado = new File(SERVER_ROUTE + file);
         long length = seleccionado.length();
         int leidos = 0;
-
+        System.out.println("Archivo Existe: "+seleccionado.exists());
         String sb = "";
-        sb = sb + "HTTP/1.0 200 ok\n";
-        sb = sb + "Server: Pichonazo/1.0 \n";
-        sb = sb + "Date: " + new Date() + " \n";
-        sb = sb + "Content-Type: text/html \n";
-        sb = sb + "Content-Length: " + length + " \n";
-        sb = sb + "\n";
-        bos.write(sb.getBytes());
-        bos.flush();
+       if(seleccionado.exists()){
+           contentType="Content-Type: "+mime+"\n";
+           sb = sb + "HTTP/1.0 200 ok\n";
+           sb = sb + "Server: MikeNoob/1.0 \n";
+           sb = sb + "Date: " + new Date() + " \n";
+           sb = sb + contentType;
+           sb = sb + "Content-Length: " + length + " \n";
+           sb = sb + "\n";
+           bos.write(sb.getBytes());
+           bos.flush();
+       }else {
+           contentType="Content-Type: "+mime+"\n";
+           sb = sb + "HTTP/1.0 404 Not Found\n";
+           sb = sb + "Server: MikeNoob/1.0 \n";
+           sb = sb + "Date: " + new Date() + " \n";
+           sb = sb + contentType;
+           sb = sb + "Content-Length: " + length + " \n";
+           sb = sb + "\n";
+           bos.write(sb.getBytes());
+           bos.flush();
+       }
+
+        System.out.println(contentType );
+        if ((seleccionado.exists())) {
+            System.out.println("Codigo:  200 ok");
+        } else {
+            System.out.println("Codigo:  404 Not Found");
+        }
+        System.out.println("Date: "+new Date());
+        System.out.println("Content-Lenght: "+length);
+
 
         FileInputStream fr = new FileInputStream(seleccionado);
         leidos = fr.read(buffer);
@@ -97,4 +125,28 @@ public class Peticion extends Thread {
         bos.flush();
         fr.close();
     }
+
+    private String iniciaMiemes(String file){
+        listaMime = new HashMap<>();
+        listaMime.put("doc", "application/msword");
+        listaMime.put("pdf", "application/pdf");
+        listaMime.put("rar", "application/x-rar-compressed");
+        listaMime.put("mp3", "audio/mpeg");
+        listaMime.put("jpg", "image/jpeg");
+        listaMime.put("jpeg", "image/jpeg");
+        listaMime.put("png", "image/png");
+        listaMime.put("html", "text/html");
+        listaMime.put("htm", "text/html");
+        listaMime.put("mp4", "video/mp4");
+        listaMime.put("java", "text/plain");
+        listaMime.put("c", "text/plain");
+        listaMime.put("txt", "text/plain");
+
+
+    return listaMime.get(file);
+
+    }
+
+
+
 }

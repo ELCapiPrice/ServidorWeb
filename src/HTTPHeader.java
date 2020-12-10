@@ -14,6 +14,7 @@ public class HTTPHeader {
     private final static String CONTENT_LENGTH_FLAG = "th:";
     public final static String METHOD_GET = "GET";
     public final static String METHOD_POST = "POST";
+    public HashMap<String, String> listaMime;
     BufferedReader br;
 
     public String getMethod() {
@@ -42,6 +43,9 @@ public class HTTPHeader {
     private String method;
     private String file;
     private HashMap<String, String> parametros;
+    private  String cabecera;
+    private     String x;
+
 
     public HTTPHeader(InputStream is) {
         this.br = new BufferedReader(new InputStreamReader(is));
@@ -53,6 +57,10 @@ public class HTTPHeader {
         String[] fields = s.split(" ");
         method = fields[0];
         file = fields[1];
+        cabecera= fields[2];
+        //x= fields[3];
+        System.out.println("Cabecera: "+cabecera);
+        System.out.println("File:  "+file);
         int qmark = file.indexOf("?");
         String fullParams = null;
         if (qmark >= 0) {
@@ -90,5 +98,10 @@ public class HTTPHeader {
                 parametros.put(pp[0], pp[1]);
             }
         }
+
     }
+
+
+
 }
+
