@@ -5,10 +5,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 
-/**
- *
- * @author (at)fferegrino
- */
 public class HTTPHeader {
 
     private final static String CONTENT_LENGTH_FLAG = "th:";
@@ -54,7 +50,9 @@ public class HTTPHeader {
 
     void parse() throws IOException {
         String s = br.readLine();
-        String[] fields = s.split(" ");
+        String[] fields;
+        fields = s.split(" ");
+
         method = fields[0];
         file = fields[1];
         cabecera= fields[2];
@@ -98,10 +96,6 @@ public class HTTPHeader {
                 parametros.put(pp[0], pp[1]);
             }
         }
-
     }
 
-
-
 }
-

@@ -1,29 +1,23 @@
-import java.io.BufferedOutputStream;
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-/**
- *
- * @author (at)fferegrino
- */
 public class Servidor {
 
+    static final int MAX_T = 3;
     public static final int LISTENING_PORT = 7777;
     private static ServerSocket ss;
 
     public static void main(String [] args) {
         try {
             ss = new ServerSocket(LISTENING_PORT);
+            ExecutorService pool = Executors.newFixedThreadPool(MAX_T);
             for (;;) {
                 Socket s = ss.accept();
-                new Peticion(s).start();
+                Runnable r1 = new PoolThread(s);
+                pool.execute(r1);
             }
         } catch (IOException ex) {
         }

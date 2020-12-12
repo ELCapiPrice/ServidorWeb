@@ -1,15 +1,8 @@
-        import org.w3c.dom.ls.LSOutput;
+import java.io.*;
+import java.net.Socket;
+import java.util.Date;
+import java.util.HashMap;
 
-        import java.io.*;
-        import java.net.Socket;
-        import java.util.Date;
-        import java.util.HashMap;
-
-/**
- * Clase para manejar la petición web
- *
- * @author (at)fferegrino
- */
 public class Peticion extends Thread {
     public static File  directory = new File("./Server");
     public static final String SERVER_ROUTE = directory.getAbsolutePath();
@@ -46,8 +39,6 @@ public class Peticion extends Thread {
 
             System.out.println("Extension: "+extension);
 
-            //TODO obtener extension del archivo de "file"
-
             System.out.println("Petición: " + header.getMethod() + " " + file);
            // System.out.println("Header: "+header.toString());
             HashMap<String, String> parametros = header.getParametros();
@@ -58,11 +49,14 @@ public class Peticion extends Thread {
                 }
             }
 
-            sendFile(file);
+            if(header.getMethod().equals("GET") || header.getMethod().equals("POST")){
+                sendFile(file);
+            } else if(header.getMethod().equals("HEAD")){
+                sendHeader(file);
+            }
 
             bos.close();
             pw.close();
-
 
             socket.shutdownInput();
             socket.close();
@@ -74,10 +68,50 @@ public class Peticion extends Thread {
         System.out.println(msg);
     }
 
+    private void sendHeader(String file)throws FileNotFoundException, IOException {
+        String mime= iniciaMiemes(extension);
+        File seleccionado = new File(SERVER_ROUTE + file);
+        long length = seleccionado.length();
+        int leidos = 0;
+        System.out.println("Archivo Existe: "+seleccionado.exists());
+        String sb = "";
+        if(seleccionado.exists()){
+            contentType="Content-Type: "+mime+"\n";
+            sb = sb + "HTTP/1.0 200 ok\n";
+            sb = sb + "Server: Node/1.0 \n";
+            sb = sb + "Date: " + new Date() + " \n";
+            sb = sb + contentType;
+            sb = sb + "Content-Length: " + length + " \n";
+            sb = sb + "\n";
+            bos.write(sb.getBytes());
+            bos.flush();
+        }else {
+            contentType="Content-Type: "+mime+"\n";
+            sb = sb + "HTTP/1.0 404 Not Found\n";
+            sb = sb + "Server: Node/1.0 \n";
+            sb = sb + "Date: " + new Date() + " \n";
+            sb = sb + contentType;
+            sb = sb + "Content-Length: " + length + " \n";
+            sb = sb + "\n";
+            bos.write(sb.getBytes());
+            bos.flush();
+        }
+
+        System.out.println(contentType );
+        if ((seleccionado.exists())) {
+            System.out.println("Codigo:  200 ok");
+        } else {
+            System.out.println("Codigo:  404 Not Found");
+        }
+        System.out.println("Date: "+new Date());
+        System.out.println("Content-Lenght: "+length);
+
+        bos.flush();
+    }
+
     private void sendFile(String file) throws FileNotFoundException, IOException {
 
         String mime= iniciaMiemes(extension);
-
         File seleccionado = new File(SERVER_ROUTE + file);
         long length = seleccionado.length();
         int leidos = 0;
@@ -86,7 +120,7 @@ public class Peticion extends Thread {
        if(seleccionado.exists()){
            contentType="Content-Type: "+mime+"\n";
            sb = sb + "HTTP/1.0 200 ok\n";
-           sb = sb + "Server: MikeNoob/1.0 \n";
+           sb = sb + "Server: Node/1.0 \n";
            sb = sb + "Date: " + new Date() + " \n";
            sb = sb + contentType;
            sb = sb + "Content-Length: " + length + " \n";
@@ -96,7 +130,7 @@ public class Peticion extends Thread {
        }else {
            contentType="Content-Type: "+mime+"\n";
            sb = sb + "HTTP/1.0 404 Not Found\n";
-           sb = sb + "Server: MikeNoob/1.0 \n";
+           sb = sb + "Server: Node/1.0 \n";
            sb = sb + "Date: " + new Date() + " \n";
            sb = sb + contentType;
            sb = sb + "Content-Length: " + length + " \n";
@@ -142,11 +176,6 @@ public class Peticion extends Thread {
         listaMime.put("c", "text/plain");
         listaMime.put("txt", "text/plain");
 
-
     return listaMime.get(file);
-
     }
-
-
-
 }

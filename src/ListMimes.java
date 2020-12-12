@@ -4,7 +4,6 @@ public class ListMimes {
 
      public HashMap<String, String> listaMime;
 
-
      public  void ListMimes () {
         listaMime = new HashMap<>();
         listaMime.put("doc", "application/msword");
@@ -21,6 +20,5 @@ public class ListMimes {
         listaMime.put("c", "text/plain");
         listaMime.put("txt", "text/plain");
     }
-
 
 }
