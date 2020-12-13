@@ -6,7 +6,7 @@ import java.util.HashMap;
 public class Peticion extends Thread {
     public static File  directory = new File("./Server");
     public static final String SERVER_ROUTE = directory.getAbsolutePath();
-    public static final String INDEX = "/index.html";
+    public static final String INDEX = "/prueba.json";
     public static final int BUFFER_SIZE = 1024;
     private byte[] buffer = new byte[BUFFER_SIZE];
     private Socket socket;
@@ -175,7 +175,7 @@ public class Peticion extends Thread {
         listaMime.put("java", "text/plain");
         listaMime.put("c", "text/plain");
         listaMime.put("txt", "text/plain");
-
+        listaMime.put("json" , "application/json");
     return listaMime.get(file);
     }
 }
