@@ -7,12 +7,12 @@ import java.util.concurrent.Executors;
 public class Servidor {
 
     static final int MAX_T = 3;
-    public static final int LISTENING_PORT = 7777;
+    public static final int Puerto = 7777;
     private static ServerSocket ss;
 
     public static void main(String [] args) {
         try {
-            ss = new ServerSocket(LISTENING_PORT);
+            ss = new ServerSocket(Puerto);
             ExecutorService pool = Executors.newFixedThreadPool(MAX_T);
             for (;;) {
                 Socket s = ss.accept();

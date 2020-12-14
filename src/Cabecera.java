@@ -1,15 +1,14 @@
 import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 
-public class HTTPHeader {
+public class Cabecera {
 
     private final static String CONTENT_LENGTH_FLAG = "th:";
-    public final static String METHOD_GET = "GET";
-    public final static String METHOD_POST = "POST";
+    public final static String MetodoGET = "GET";
+    public final static String MetodoPOST = "POST";
     public HashMap<String, String> listaMime;
     BufferedReader br;
 
@@ -43,7 +42,7 @@ public class HTTPHeader {
     private     String x;
 
 
-    public HTTPHeader(InputStream is) {
+    public Cabecera(InputStream is) {
         this.br = new BufferedReader(new InputStreamReader(is));
         this.parametros = new HashMap<String, String>();
     }
@@ -65,16 +64,16 @@ public class HTTPHeader {
             fullParams = file.substring(qmark + 1);
             file = file.substring(0, qmark);
         }
-        if (METHOD_GET.equals(method)) {
+        if (MetodoGET.equals(method)) {
             // TODO: Algo
-        } else if (METHOD_POST.equals(method)) {
-            String xD = br.readLine();
+        } else if (MetodoPOST.equals(method)) {
+            String buff = br.readLine();
             int mxRead = 0;
-            while (xD.length() > 0) {
-                xD = br.readLine();
-                if (xD.indexOf(CONTENT_LENGTH_FLAG) > 0) {
+            while (buff.length() > 0) {
+                buff = br.readLine();
+                if (buff.indexOf(CONTENT_LENGTH_FLAG) > 0) {
                     mxRead = Integer.parseInt(
-                            xD.substring(xD.indexOf(CONTENT_LENGTH_FLAG)
+                            buff.substring(buff.indexOf(CONTENT_LENGTH_FLAG)
                                     + CONTENT_LENGTH_FLAG.length() + 1));
                 }
             }

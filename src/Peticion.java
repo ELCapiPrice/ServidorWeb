@@ -5,8 +5,8 @@ import java.util.HashMap;
 
 public class Peticion extends Thread {
     public static File  directory = new File("./Server");
-    public static final String SERVER_ROUTE = directory.getAbsolutePath();
-    public static final String INDEX = "/prueba.json";
+    public static final String ServerPath = directory.getAbsolutePath();
+    public static final String HomePage = "/prueba.json";
     public static final int BUFFER_SIZE = 1024;
     private byte[] buffer = new byte[BUFFER_SIZE];
     private Socket socket;
@@ -26,11 +26,11 @@ public class Peticion extends Thread {
             bos = new BufferedOutputStream(socket.getOutputStream());
             pw = new PrintWriter(new OutputStreamWriter(bos));
 
-            HTTPHeader header = new HTTPHeader(socket.getInputStream());
+            Cabecera header = new Cabecera(socket.getInputStream());
             header.parse();
             // Archivo solicitado
             String file = header.getFile();
-            file = file.equals("/") ? INDEX : file;
+            file = file.equals("/") ? HomePage : file;
             extension = "";
             int i = file.lastIndexOf('.');
             if (i >= 0) {
@@ -70,7 +70,7 @@ public class Peticion extends Thread {
 
     private void sendHeader(String file)throws FileNotFoundException, IOException {
         String mime= iniciaMiemes(extension);
-        File seleccionado = new File(SERVER_ROUTE + file);
+        File seleccionado = new File(ServerPath + file);
         long length = seleccionado.length();
         int leidos = 0;
         System.out.println("Archivo Existe: "+seleccionado.exists());
@@ -112,7 +112,7 @@ public class Peticion extends Thread {
     private void sendFile(String file) throws FileNotFoundException, IOException {
 
         String mime= iniciaMiemes(extension);
-        File seleccionado = new File(SERVER_ROUTE + file);
+        File seleccionado = new File(ServerPath + file);
         long length = seleccionado.length();
         int leidos = 0;
         System.out.println("Archivo Existe: "+seleccionado.exists());
